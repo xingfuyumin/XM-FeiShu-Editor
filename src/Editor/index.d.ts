@@ -119,6 +119,93 @@ export type CalloutBackgroundColor = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11
  */
 export type CalloutBorderColor = 1 | 2 | 3 | 4 | 5 | 6 | 7;
 /**
+  * 代码块语言
+  * 1	PlainText
+  * 2	ABAP
+3	Ada
+4	Apache
+5	Apex
+6	Assembly
+7	Bash
+8	CSharp
+9	C++
+10	C
+11	COBOL
+12	CSS
+13	CoffeeScript
+14	D
+15	Dart
+16	Delphi
+17	Django
+18	Dockerfile
+19	Erlang
+20	Fortran
+21	FoxPro
+22	Go
+23	Groovy
+24	HTML
+25	HTMLBars
+26	HTTP
+27	Haskell
+28	JSON
+29	Java
+30	JavaScript
+31	Julia
+32	Kotlin
+33	LateX
+34	Lisp
+35	Logo
+36	Lua
+37	MATLAB
+38	Makefile
+39	Markdown
+40	Nginx
+41	Objective
+42	OpenEdgeABL
+43	PHP
+44	Perl
+45	PostScript
+46	Power
+47	Prolog
+48	ProtoBuf
+49	Python
+50	R
+51	RPG
+52	Ruby
+53	Rust
+54	SAS
+55	SCSS
+56	SQL
+57	Scala
+58	Scheme
+59	Scratch
+60	Shell
+61	Swift
+62	Thrift
+63	TypeScript
+64	VBScript
+65	Visual
+66	XML
+67	YAML
+68	CMake
+69	Diff
+70	Gherkin
+71	GraphQL
+72	OpenGL Shading Language
+73	Properties
+74	Solidity
+75	TOML
+
+*/
+export type CodeLanguage = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |
+  11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 |
+  21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 |
+  31 | 32 | 33 | 34 | 35 | 36 | 37 | 38 | 39 | 40 |
+  41 | 42 | 43 | 44 | 45 | 46 | 47 | 48 | 49 | 50 |
+  51 | 52 | 53 | 54 | 55 | 56 | 57 | 58 | 59 | 60 |
+  61 | 62 | 63 | 64 | 65 | 66 | 67 | 68 | 69 | 70 |
+  71 | 72 | 73 | 74 | 75;
+/**
  * 分栏
  */
 export interface GridElement {
@@ -131,6 +218,9 @@ export interface GridElement {
   };
   children: GridColumnElement[];
 }
+
+type GridColumnChildren = TextElement | Bullet | Ordered | Heading | Image;
+
 /**
  * 分栏列
  */
@@ -142,7 +232,7 @@ export interface GridColumnElement {
      */
     width_ratio?: number;
   };
-  children: TextElement[];
+  children: GridColumnChildren[];
 }
 /**
  * 文字
@@ -215,14 +305,124 @@ export interface HeadingElement {
   align?: Align;
   level?: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
 }
+/**
+ * 标签页
+ */
+export interface TabsElement {
+  type: 'Tabs';
+  children: TabPaneElement[];
+  align?: Align;
+}
+type TabPaneChildren = TextElement | Bullet | Ordered | Heading | Image | Tip | Warning | Danger | Divider | Quote | Table | Code | Callout | Grid;
+/**
+ * 标签内容
+ */
+export interface TabPaneElement {
+  type: 'TabPane';
+  title: string,
+  children: TabPaneChildren[];
+}
+/**
+ * 标签内容
+ */
+export interface ImageElement {
+  type: 'Image';
+  align?: Align;
+  src: string;
+  loading?: boolean;
+  children: Text[];
+}
+/**
+ * 帮助内容
+ */
+export interface TipElement {
+  type: 'Tip';
+  title: string;
+  align?: Align;
+  children: TextElement[];
+}
+/**
+ * 警告内容
+ */
+export interface WarningElement {
+  type: 'Warning';
+  title: string;
+  align?: Align;
+  children: TextElement[];
+}
+/**
+ * 警告内容
+ */
+export interface DangerElement {
+  type: 'Danger';
+  title: string;
+  align?: Align;
+  children: TextElement[];
+}
+/**
+ * 引用内容
+ */
+export interface QuoteElement {
+  type: 'Quote';
+  align?: Align;
+  children: TextElement[];
+}
+export interface DividerElement {
+  type: 'Divider';
+  children: Text[];
+}
+export interface CodeElement {
+  type: 'Code';
+  children: TextElement[];
+  align?: Align;
+  language?: CodeLanguage;
+  wrap?: boolean;
+}
+export interface TableElement {
+  type: 'Table';
+  children: TableCellElement[];
+  property: {
+    /**
+     * 行数。
+     */
+    row_size: number;
+    /**
+    * 列数。
+    */
+    column_size: number;
+    /**
+    * 列宽，单位px。
+    */
+    column_width?: number[];
+    /**
+    * 单元格合并信息。在创建 Table 时候此属性是只读的，将由后端进行生成。如果需要对单元格进行合并操作，可以通过更新块的子请求 merge_table_cells 来实现。
+    */
+    merge_info?: {
+      /**
+       * 从当前行索引起被合并的连续行数。
+       */
+      row_span?: number;
+      /**
+       * 从当前列索引起被合并的连续列数。
+       */
+      col_span?: number;
+    }[];
+  }
+}
+type TableCellChildren = TextElement | Bullet | Ordered | Heading | Image;
 
-type Node = GridElement | GridColumnElement | BulletElement | TextElement | OrderedElement;
+export interface TableCellElement {
+  type: 'TableCell';
+  children: TableCellChildren[];
+}
 
 declare module 'slate' {
   interface CustomTypes {
     Editor: BaseEditor & ReactEditor
     Element: GridElement | BulletElement | TextElement | OrderedElement |
-    HeadingElement | CalloutElement;
+    HeadingElement | CalloutElement | TabsElement | TabPaneElement | ImageElement |
+    TipElement | WarningElement | DangerElement | DividerElement | QuoteElement |
+    TableElement | TableCellElement;
     Text: Text
   }
 }

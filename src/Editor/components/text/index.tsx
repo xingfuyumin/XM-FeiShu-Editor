@@ -14,7 +14,7 @@ type Props = {
 const Index: FC<Props> = ({
   attributes, children, element,
 }) => {
-  useText(element);
+  // useText(element);
   const isFocus = useFocus(element);
   return (
     <div

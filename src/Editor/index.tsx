@@ -9,145 +9,432 @@ const initialValue = [
   {
     type: 'Heading',
     level: 1,
-    children: [{ text: '' }]
+    children: [{ text: '标题' }]
   },
   {
-    type: 'Grid',
-    grid: {
-      column_size: 4,
-    },
+    type: 'Tabs',
     children: [
       {
-        type: 'GridColumn',
-        grid_column: {
-          width_ratio: 25,
-        },
-        children: [{
-          type: 'Text',
-          children: [{ text: '我是第一块内容' }]
-        }]
+        type: 'TabPane',
+        title: '标签1',
+        children: [
+          {
+            type: 'Text',
+            children: [
+              {
+                text: '内容1',
+              }
+            ],
+          }
+        ],
       },
       {
-        type: 'GridColumn',
-        grid_column: {
-          width_ratio: 25,
-        },
-        children: [{
-          type: 'Text',
-          children: [{ text: '我是第二块内容' }]
-        }]
+        type: 'TabPane',
+        title: '标签2',
+        children: [
+          {
+            type: 'Text',
+            children: [
+              {
+                text: '内容2',
+              }
+            ],
+          }
+        ],
+      }
+    ]
+  },
+  {
+    type: 'Divider',
+    children: [{ text: '' }]
+  },
+  // {
+  //   type: 'Text',
+  //   children: [{ text: '' }]
+  // },
+  // {
+  //   type: 'Tip',
+  //   title: '提示',
+  //   children: [{
+  //     type: 'Text',
+  //     children: [
+  //       {
+  //         text: '提示',
+  //       }
+  //     ],
+  //   }]
+  // },
+  // {
+  //   type: 'Quote',
+  //   children: [{
+  //     type: 'Text',
+  //     children: [
+  //       {
+  //         text: 'Quote',
+  //       }
+  //     ],
+  //   }]
+  // },
+  // {
+  //   type: 'Danger',
+  //   title: '危险提示',
+  //   children: [{
+  //     type: 'Text',
+  //     children: [
+  //       {
+  //         text: '危险提示',
+  //       }
+  //     ],
+  //   }]
+  // },
+  // {
+  //   type: 'Warning',
+  //   title: '警告提示',
+  //   children: [{
+  //     type: 'Text',
+  //     children: [
+  //       {
+  //         text: '警告提示',
+  //       }
+  //     ],
+  //   }]
+  // },
+  // {
+  //   type: 'Text',
+  //   children: [{ text: '' }]
+  // },
+  {
+    type: 'Code',
+    children: [
+      {
+        type: 'Text',
+        children: [
+          {
+            text: '我是代码我是代码',
+          }
+        ],
       },
       {
-        type: 'GridColumn',
-        grid_column: {
-          width_ratio: 25,
-        },
-        children: [{
-          type: 'Text',
-          children: [{ text: '我是第三块内容' }]
-        }]
+        type: 'Text',
+        children: [
+          {
+            text: '我是代码我是代码',
+          }
+        ],
       },
       {
-        type: 'GridColumn',
-        grid_column: {
-          width_ratio: 25,
-        },
-        children: [{
-          type: 'Text',
-          children: [{ text: '我是第四块内容' }]
-        }]
+        type: 'Text',
+        children: [
+          {
+            text: '我是代码我是代码',
+          }
+        ],
       },
+      {
+        type: 'Text',
+        children: [
+          {
+            text: '我是代码我是代码',
+          }
+        ],
+      },
+      {
+        type: 'Text',
+        children: [
+          {
+            text: '我是代码我是代码我是代码我是代码我是代码我是代码我是代码我是代码我是代码我是代码我是代码我是代码我是代码我是代码我是代码我是代码我是代码我是代码我是代码我是代码我是代码我是代码我是代码我是代码我是代码我是代码我是代码我是代码我是代码我是代码我是代码我是代码我是代码我是代码我是代码我是代码',
+          }
+        ],
+      },
+      {
+        type: 'Text',
+        children: [
+          {
+            text: '我是代码',
+          }
+        ],
+      }
+    ]
+  },
+  {
+    type: 'Text',
+    children: [
+      {
+        text: '我是代码',
+      }
     ],
   },
   {
-    type: 'Bullet',
-    indentation: { num: 0 },
-    children: [
-      { text: '我是一级列表' }
-    ]
-  },
-  {
-    type: 'Bullet',
-    indentation: { num: 1 },
-    children: [
-      { text: '我是二级列表' }
-    ]
-  },
-  {
-    type: 'Bullet',
-    indentation: { num: 2 },
-    children: [
-      { text: '我是三级列表' }
-    ]
-  },
-  {
-    type: 'Bullet',
-    indentation: { num: 3 },
-    children: [
-      { text: '我是四级列表' }
-    ]
-  },
-  {
-    type: 'Bullet',
-    indentation: { num: 4 },
-    children: [
-      { text: '我是五级列表' }
-    ]
-  },
+    type: 'Table',
+    "property": {
+      "column_size": 4,
+      "column_width": [
+        100,
+        128,
+        129,
+        200,
+      ],
+      "merge_info": [
+        {
+          "col_span": 2,
+          "row_span": 2
+        },
+        {
+          "col_span": 1,
+          "row_span": 1
+        },
+        {
+          "col_span": 1,
+          "row_span": 1
+        },
+        {
+          "col_span": 1,
+          "row_span": 1
+        },
+        {
+          "col_span": 1,
+          "row_span": 1
+        },
+        {
+          "col_span": 1,
+          "row_span": 1
+        },
+        {
+          "col_span": 1,
+          "row_span": 1
+        },
+        {
+          "col_span": 1,
+          "row_span": 1
+        },
+        {
+          "col_span": 1,
+          "row_span": 1
+        },
 
-  {
-    type: 'Ordered',
-    indentation: { num: 0 },
+        {
+          "col_span": 1,
+          "row_span": 1
+        },
+
+        {
+          "col_span": 2,
+          "row_span": 2
+        },
+
+        {
+          "col_span": 1,
+          "row_span": 1
+        },
+
+        {
+          "col_span": 1,
+          "row_span": 1
+        },
+
+        {
+          "col_span": 1,
+          "row_span": 1
+        },
+
+        {
+          "col_span": 1,
+          "row_span": 1
+        },
+
+        {
+          "col_span": 1,
+          "row_span": 1
+        }
+      ],
+      "row_size": 4
+    },
     children: [
-      { text: '我是一级列表' }
-    ]
-  },
-  {
-    type: 'Ordered',
-    indentation: { num: 1 },
-    children: [
-      { text: '我是二级列表' }
-    ]
-  },
-  {
-    type: 'Ordered',
-    indentation: { num: 2 },
-    children: [
-      { text: '我是三级列表' }
-    ]
-  },
-  {
-    type: 'Ordered',
-    indentation: { num: 3 },
-    children: [
-      { text: '我是四级列表' }
-    ]
-  },
-  {
-    type: 'Ordered',
-    indentation: { num: 0 },
-    children: [
-      { text: '我是一级列表' }
-    ]
-  },
-  {
-    type: 'Ordered',
-    indentation: { num: 1 },
-    children: [
-      { text: '我是二级列表' }
-    ]
-  },
-  {
-    type: 'Text',
-    children: [{ text: '' }]
-  },
-  {
-    type: 'Text',
-    children: [{ text: '' }]
-  },
+      {
+        type: 'TableCell',
+        children: [{
+          type: 'Text',
+          children: [
+            {
+              text: '我是代码',
+            }
+          ],
+        }]
+      },
+      {
+        type: 'TableCell',
+        children: [{
+          type: 'Text',
+          children: [
+            {
+              text: '我是代码',
+            }
+          ],
+        }]
+      },
+      {
+        type: 'TableCell',
+        children: [{
+          type: 'Text',
+          children: [
+            {
+              text: '我是代码',
+            }
+          ],
+        }]
+      },
+      {
+        type: 'TableCell',
+        children: [{
+          type: 'Text',
+          children: [
+            {
+              text: '我是代码',
+            }
+          ],
+        }]
+      },
+      {
+        type: 'TableCell',
+        children: [{
+          type: 'Text',
+          children: [
+            {
+              text: '我是代码',
+            }
+          ],
+        }]
+      },
+      {
+        type: 'TableCell',
+        children: [{
+          type: 'Text',
+          children: [
+            {
+              text: '我是代码',
+            }
+          ],
+        }]
+      },
+      {
+        type: 'TableCell',
+        children: [{
+          type: 'Text',
+          children: [
+            {
+              text: '我是代码',
+            }
+          ],
+        }]
+      },
+      {
+        type: 'TableCell',
+        children: [{
+          type: 'Text',
+          children: [
+            {
+              text: '我是代码',
+            }
+          ],
+        }]
+      },
+      {
+        type: 'TableCell',
+        children: [{
+          type: 'Text',
+          children: [
+            {
+              text: '我是代码',
+            }
+          ],
+        }]
+      },
+      {
+        type: 'TableCell',
+        children: [{
+          type: 'Text',
+          children: [
+            {
+              text: '我是代码',
+            }
+          ],
+        }]
+      },
+      {
+        type: 'TableCell',
+        children: [{
+          type: 'Text',
+          children: [
+            {
+              text: '我是代码',
+            }
+          ],
+        }]
+      },
+      {
+        type: 'TableCell',
+        children: [{
+          type: 'Text',
+          children: [
+            {
+              text: '我是代码',
+            }
+          ],
+        }]
+      },
+      {
+        type: 'TableCell',
+        children: [{
+          type: 'Text',
+          children: [
+            {
+              text: '我是代码',
+            }
+          ],
+        }]
+      },
+      {
+        type: 'TableCell',
+        children: [{
+          type: 'Text',
+          children: [
+            {
+              text: '我是代码',
+            }
+          ],
+        }]
+      },
+      {
+        type: 'TableCell',
+        children: [{
+          type: 'Text',
+          children: [
+            {
+              text: '我是代码',
+            }
+          ],
+        }]
+      },
+      {
+        type: 'TableCell',
+        children: [{
+          type: 'Text',
+          children: [
+            {
+              text: '我是代码',
+            }
+          ],
+        }]
+      },
+    ],
+  }
 ]
-
-const Index: FC = () => {
+type Props = {
+  onUpload: (base64: string) => Promise<string>;
+};
+const Index: FC<Props> = ({
+  onUpload,
+}) => {
   const editor = useMemo(() => withReact(createEditor()), []);
   return (
     <Slate
@@ -155,8 +442,18 @@ const Index: FC = () => {
       initialValue={initialValue as any}
       onChange={value => {
         console.log(value);
-      }}>
-        <Editable />
+      }}
+    >
+      <Editable
+        // onUpload={onUpload}
+        onUpload={async () => {
+          return await new Promise((r) => {
+            setTimeout(() => {
+              r('');
+            }, 1000);
+          });
+        }}
+      />
     </Slate>
   )
 };
