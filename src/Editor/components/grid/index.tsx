@@ -1,7 +1,7 @@
 import React, { FC, ReactNode } from 'react';
 import './index.less';
-import { GridElement } from '../../index.d';
-import useFocus from '../../hooks/useFocus';
+import { GridElement } from '../../typing';
+import useFocus from '../../hooks/useHover';
 
 type Props = {
   attributes: any;

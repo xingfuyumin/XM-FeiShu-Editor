@@ -1,33 +1,33 @@
-import { useSlateSelector } from 'slate-react';
-import { debounce } from 'lodash';
+import { useSlate, useSlateSelector } from 'slate-react';
+import { cloneDeep, debounce } from 'lodash';
 import { closeTextTool, openTextTool } from '../plugin/text-tool';
 import { useEffect } from 'react';
+import { closeNodeClickTool, openNodeClickTool } from '../plugin/node-click-tool';
 const openTextToolDebounce = debounce(openTextTool, 200);
 const closeTextToolDebounce = debounce(closeTextTool, 200);
 export default () => {
-  const [slate, selectionLen] = useSlateSelector((slate) => {
-    return [slate, getSelection()?.toString()?.length];
+  const slate = useSlate();
+  const selectionType = useSlateSelector((slate) => { // 0未选择，1多选，2开头是其他，内容表示单选时节点path
+    const selection = slate.selection;
+    if (selection) {
+      if (JSON.stringify(selection.focus) === JSON.stringify(selection.anchor)) {
+        return selection.focus.path.join(',');
+      }
+      return 1;
+    } else {
+      return 0;
+    }
   });
   useEffect(() => {
-    if (selectionLen) {
-      const selection = getSelection();
-      const range = selection?.rangeCount ? selection?.getRangeAt(0) : undefined;
-      const rect = range?.getBoundingClientRect();
-      const top = (rect?.top || 0) - 40;
-      let left = rect?.left || 0;
-      left = Math.max(400, left);
-      const width = document.documentElement.clientWidth;
-      if (width - left < 400) {
-        left = width - 400;
-      }
-      openTextToolDebounce({
-        top,
-        left,
-        slate,
-        close: () => closeTextToolDebounce(slate),
-      });
-    } else {
-      closeTextToolDebounce(slate);
+    if (selectionType === 0) {
+      // 关闭一切
+      closeNodeClickTool();
+      return;
     }
-  }, [selectionLen]);
+    if (selectionType === 1) { // 范围选择
+      return;
+    }
+    const path = selectionType.split(',')?.map(d => Number(d)) || [];
+    openNodeClickTool(slate, path, closeNodeClickTool);
+  }, [selectionType]);
 }

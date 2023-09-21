@@ -1,6 +1,6 @@
 import React, { FC, ReactNode } from 'react';
 import './index.less';
-import { TableCellElement } from '../../index.d';
+import { TableCellElement } from '../../typing';
 
 type Props = {
   attributes: any;

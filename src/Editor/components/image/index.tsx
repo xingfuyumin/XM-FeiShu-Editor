@@ -1,7 +1,6 @@
 import React, { FC, ReactNode } from 'react';
 import './index.less';
-import { ImageElement } from '../../index.d';
-import typeTool from 'tant-editor/Editor/plugin/type-tool';
+import { ImageElement } from '../../typing';
 import classNames from 'classnames'
 import { Loading } from '@tant/ui-next';
 import usePath from 'tant-editor/Editor/hooks/usePath';
@@ -59,4 +58,4 @@ const Index: FC<Props> = ({
   );
 }
 
-export default typeTool(Index);
+export default Index;

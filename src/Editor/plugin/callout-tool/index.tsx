@@ -4,7 +4,7 @@ import './index.less';
 import { Select } from '@tant/ui-next';
 import { ReactEditor } from 'slate-react';
 import { BaseEditor } from 'slate';
-import { CalloutElement } from '../../index.d';
+import { CalloutElement } from '../../typing';
 import emoji from '../../components/callout/emoji.json';
 import { useSetState } from 'ahooks';
 

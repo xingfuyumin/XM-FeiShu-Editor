@@ -1,6 +1,6 @@
 import React, { FC, ReactNode } from 'react';
 import './index.less';
-import { WarningElement } from '../../index.d';
+import { WarningElement } from '../../typing';
 import classNames from 'classnames'
 
 type Props = {

@@ -1,33 +1,33 @@
-import React, { FC, ReactNode } from 'react';
+import React, { FC, ReactNode, useEffect } from 'react';
 import './index.less';
-import { TextElement } from '../../index.d';
-import useText from 'tant-editor/Editor/hooks/useText';
-import useFocus from 'tant-editor/Editor/hooks/useFocus';
-import typeTool from 'tant-editor/Editor/plugin/type-tool';
+import { TextElement } from '../../typing';
 
 type Props = {
   attributes: any;
   children: ReactNode;
   element: TextElement;
+  onHover: (v: TextElement | null) => void;
 };
 
 const Index: FC<Props> = ({
-  attributes, children, element,
+  attributes, children, element, onHover,
 }) => {
-  // useText(element);
-  const isFocus = useFocus(element);
+  useEffect(() => {
+    onHover(element);
+  }, [element]);
   return (
     <div
       className="tant-editor-text"
       {...attributes}
-      data-focus={isFocus}
       style={{
         textAlign: element.align || 'left'
       }}
+      onMouseEnter={() => onHover(element)}
+      onMouseLeave={() => onHover(null)}
     >
       {children}
     </div>
   );
 }
 
-export default typeTool(Index);;
+export default Index;

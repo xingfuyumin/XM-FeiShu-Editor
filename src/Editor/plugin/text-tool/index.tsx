@@ -1,103 +1,31 @@
-import React, { FC, useEffect, useMemo } from 'react';
-import { createRoot } from 'react-dom/client';
+import React, { FC, useCallback, useEffect, useState } from 'react';
 import './index.less';
-import { Button, Input, Select } from '@tant/ui-next';
-import { ReactEditor } from 'slate-react';
-import { BaseEditor, Text as Text2 } from 'slate';
-import { getBgColor, getLink, getTextColor, handleBgColor, handleBold, handleInlineCode, handleItalic, handleSelection, handleStrikethrough, handleTextColor, handleUnderline, isBold, isInlineCode, isItalic, isStrikethrough, isUnderline } from 'tant-editor/Editor/tools';
-import { Text } from '../../index.d';
+import { Button, Select } from '@tant/ui-next'
+import { useSlate, useSlateSelector } from 'slate-react';
+import { Link, FontColor, FontBackgroundColor } from '../../typing'
+import { debounce } from 'lodash';
 import { useSetState } from 'ahooks';
-import { closeUrlTool, openUrlTool } from '../url-tool';
-import { cloneDeep } from 'lodash';
-import { closeCalloutTool } from '../callout-tool';
+import { getBgColor, getLink, getTextColor, handleBgColor, handleBold, handleInlineCode, handleItalic, handleStrikethrough, handleTextColor, handleUnderline, isBold, isInlineCode, isItalic, isStrikethrough, isUnderline } from 'tant-editor/Editor/tools';
 
-export const elementOptions = [
-  {
-    key: 'Text',
-    value: 'Text',
-    label: 'Text 文本',
-  },
-  {
-    key: 'Grid2',
-    value: 2,
-    label: 'Grid 分栏 2',
-  },
-  {
-    key: 'Grid3',
-    value: 3,
-    label: 'Grid 分栏 3',
-  },
-  {
-    key: 'Grid4',
-    value: 4,
-    label: 'Grid 分栏 4',
-  },
-  {
-    key: 'Grid5',
-    value: 5,
-    label: 'Grid 分栏 5',
-  },
-  {
-    key: 'Heading1',
-    value: 1,
-    label: 'Heading 标题 1',
-  },
-  {
-    key: 'Heading2',
-    value: 2,
-    label: 'Heading 标题 2',
-  },
-  {
-    key: 'Heading3',
-    value: 3,
-    label: 'Heading 标题 3',
-  },
-  {
-    key: 'Heading4',
-    value: 4,
-    label: 'Heading 标题 4',
-  },
-  {
-    key: 'Heading5',
-    value: 5,
-    label: 'Heading 标题 5',
-  },
-  {
-    key: 'Heading6',
-    value: 6,
-    label: 'Heading 标题 6',
-  },
-  {
-    key: 'Heading7',
-    value: 7,
-    label: 'Heading 标题 7',
-  },
-  {
-    key: 'Heading8',
-    value: 8,
-    label: 'Heading 标题 8',
-  },
-  {
-    key: 'Heading9',
-    value: 9,
-    label: 'Heading 标题 9',
-  },
-  {
-    key: 'Bullet',
-    value: 'Bullet',
-    label: 'Bullet 无序列表',
-  },
-  {
-    key: 'Ordered',
-    value: 'Ordered',
-    label: 'Ordered 有序列表',
-  },
-  {
-    key: 'Callout',
-    value: 'Callout',
-    label: 'Callout 高亮块',
-  },
-];
+type Props = {
+  rootDom: any;
+};
+type State = {
+  style: {
+    left?: number,
+    bottom?: number,
+    top?: number,
+    right?: number,
+  }
+  bold?: boolean,
+  italic?: boolean,
+  link?: Link,
+  underline?: boolean,
+  strikethrough?: boolean,
+  inlineCode?: boolean,
+  textColor?: FontColor,
+  backgroundColor?: FontBackgroundColor,
+};
 export const alignOptions = [
   {
     key: 'left',
@@ -128,208 +56,167 @@ export const indentOptions = [
   },
 ];
 
-type Props = {
-  open?: boolean;
-  top?: number,
-  left?: number,
-  slate: BaseEditor & ReactEditor,
-  close?: () => void;
-};
 
 const Index: FC<Props> = ({
-  open = true,
-  top = 0,
-  left = 0,
-  slate,
-  close,
+  rootDom,
 }) => {
-  const textColorOptions = useMemo(() => {
-    return Array(8).fill('').map((d, index) => ({
-      key: String(index),
-      value: index,
-      label: <div className={`tant-editor-text-textcolor tant-editor-text-textcolor-${index}`}>A</div>
-    }))
-  }, []);
-  const backgroundColorOptions = useMemo(() => {
-    return Array(15).fill('').map((d, index) => ({
-      key: String(index),
-      value: index,
-      label: <div className={`tant-editor-text-bgcolor tant-editor-text-bgcolor-${index}`} />
-    }))
-  }, []);
-  const [state, setState] = useSetState<Text>({} as Text);
+  const slate = useSlate();
+  const [open, setOpen] = useState(false);
+  const [data, setData] = useSetState<State>({ style: {} });
+  const selection = useSlateSelector((slate) => {
+    const selection = slate.selection;
+    return selection;
+  });
+  const setOpenDebounce = useCallback(debounce(setOpen, 200), []);
   useEffect(() => {
-    setState({
-      bold: isBold(slate),
-      italic: isItalic(slate),
-      link: getLink(slate),
-      underline: isUnderline(slate),
-      strikethrough: isStrikethrough(slate),
-      inline_code: isInlineCode(slate),
-      text_color: getTextColor(slate),
-      background_color: getBgColor(slate),
-    });
-  }, [open])
+    const winSelection = getSelection();
+    if (!winSelection?.toString()?.length) {
+      setOpen(false);
+      return;
+    }
+    if (winSelection) {
+      const range = winSelection.getRangeAt(0);
+      const rootRect = rootDom.getBoundingClientRect();
+      const rect = range.getBoundingClientRect();
+      const obj: State = { style: {} };
+      const left = rect.left - rootRect.left - 24;
+      const right = rect.right - rootRect.right - 24;
+      const top = rect.top - rootRect.top - 24;
+      const bottom = rect.bottom - rootRect.bottom - 24;
+      if (top < bottom) {
+        obj.style.bottom = bottom - 40 - rootDom.scrollTop;
+      } else {
+        obj.style.top = top - 40 - rootDom.scrollTop;
+      }
+      if (left < right) {
+        obj.style.right = right;
+      } else {
+        obj.style.left = left;
+      }
+      obj.bold = isBold(slate);
+      obj.italic = isItalic(slate);
+      obj.link = getLink(slate);
+      obj.underline = isUnderline(slate);
+      obj.strikethrough = isStrikethrough(slate);
+      obj.inlineCode = isInlineCode(slate);
+      obj.textColor = getTextColor(slate);
+      obj.backgroundColor = getBgColor(slate);
+      setData(obj);
+      console.log(obj);
+      setOpenDebounce(true);
+    }
+  }, [selection]);
   if (!open) {
     return null;
   }
   return (
-    <div
-      className="tant-editor-text-tool"
-      style={{ left, top }}
+    <div className="tant-editor-text-tool-container"
+      onMouseDown={(e) => {
+        e.stopPropagation();
+        e.preventDefault();
+      }}
+      onContextMenu={(e) => {
+        e.stopPropagation();
+        e.preventDefault();
+      }}
     >
-      <Select
-        options={elementOptions}
-        size="small"
-        bordered={false}
-        dropdownMatchSelectWidth={false}
-        addonBefore={null}
-      />
-      <div className="tant-editor-text-tool-split" />
-      <Select
-        options={alignOptions}
-        size="small"
-        bordered={false}
-        dropdownMatchSelectWidth={false}
-        addonBefore={null}
-      />
-      <Select
-        options={indentOptions}
-        size="small"
-        bordered={false}
-        dropdownMatchSelectWidth={false}
-        addonBefore={null}
-        value="缩进"
-        placeholder="缩进"
-        showArrow={false}
-      />
-      <div className="tant-editor-text-tool-split" />
-      <Button
-        size="small"
-        type={state.bold ? 'secondary' : 'tertiary'}
-        onClick={() => {
-          handleBold(slate);
-          setState({ bold: !state.bold });
-        }}
-      >加粗</Button>
-      <Button
-        size="small"
-        type={state.strikethrough ? 'secondary' : 'tertiary'}
-        onClick={() => {
-          handleStrikethrough(slate);
-          setState({ strikethrough: !state.strikethrough });
-        }}
-      >删除线</Button>
-      <Button
-        size="small"
-        type={state.italic ? 'secondary' : 'tertiary'}
-        onClick={() => {
-          handleItalic(slate);
-          setState({ italic: !state.italic });
-        }}
-      >斜体</Button>
-      <Button
-        size="small"
-        type={state.underline ? 'secondary' : 'tertiary'}
-        onClick={() => {
-          handleUnderline(slate);
-          setState({ underline: !state.underline });
-        }}
-      >下划线</Button>
-      <Button
-        size="small"
-        type={state.link?.url ? 'secondary' : 'tertiary'}
-        onClick={() => {
-          handleSelection(slate);
-          const link = cloneDeep(getLink(slate));
-          const selection = cloneDeep(slate.selection);
-          slate.deselect();
-          if (close) {
-            close();
-          }
-          setTimeout(() => {
-            openUrlTool({
-              slate,
-              top,
-              left,
-              selection,
-              link,
-              close: () => {
-                if (selection) {
-                  slate.setNodes({
-                    selection: false,
-                  }, {
-                    at: selection,
-                    match: (node) => Text2.isText(node)
-                  });
-                }
-                closeUrlTool(slate);
-              },
-            })
-          }, 200)
-        }}
-      >链接</Button>
-      <Button
-        size="small"
-        type={state.inline_code ? 'secondary' : 'tertiary'}
-        onClick={() => {
-          handleInlineCode(slate);
-          setState({ inline_code: !state.inline_code });
-        }}
-      >代码</Button>
-      <Select
-        options={textColorOptions}
-        size="small"
-        bordered={false}
-        dropdownMatchSelectWidth={false}
-        addonBefore={null}
-        value={state.text_color}
-        onChange={(v) => {
-          handleTextColor(slate, v);
-          setState({ text_color: v });
-        }}
-      />
-      <Select
-        options={backgroundColorOptions}
-        size="small"
-        bordered={false}
-        dropdownMatchSelectWidth={false}
-        addonBefore={null}
-        value={state.background_color}
-        onChange={(v) => {
-          handleBgColor(slate, v);
-          setState({ background_color: v });
-        }}
-      />
+      <div
+        className="tant-editor-text-tool"
+        style={data.style}
+      >
+        <Select
+          options={alignOptions}
+          size="small"
+          bordered={false}
+          dropdownMatchSelectWidth={false}
+          addonBefore={null}
+          defaultValue="left"
+        />
+        <Select
+          options={indentOptions}
+          size="small"
+          bordered={false}
+          dropdownMatchSelectWidth={false}
+          addonBefore={null}
+          value="缩进"
+          placeholder="缩进"
+          showArrow={false}
+        />
+        <div className="tant-editor-text-tool-split" />
+        <Button
+          size="small"
+          type={data.bold ? 'secondary' : 'text'}
+          onClick={() => {
+            handleBold(slate);
+            setData({ bold: !data.bold });
+          }}
+        >加粗</Button>
+        <Button
+          size="small"
+          type={data.strikethrough ? 'secondary' : 'text'}
+          onClick={() => {
+            handleStrikethrough(slate);
+            setData({ strikethrough: !data.strikethrough });
+          }}
+        >删除线</Button>
+        <Button
+          size="small"
+          type={data.italic ? 'secondary' : 'text'}
+          onClick={() => {
+            handleItalic(slate);
+            setData({ italic: !data.italic });
+          }}
+        >斜体</Button>
+        <Button
+          size="small"
+          type={data.underline ? 'secondary' : 'text'}
+          onClick={() => {
+            handleUnderline(slate);
+            setData({ underline: !data.underline });
+          }}
+        >下划线</Button>
+        <Button
+          size="small"
+          type={data.link?.url ? 'secondary' : 'text'}
+          onClick={() => {
+
+          }}
+        >链接</Button>
+        <Button
+          size="small"
+          type={data.inlineCode ? 'secondary' : 'text'}
+          onClick={() => {
+            handleInlineCode(slate);
+            setData({ inlineCode: !data.inlineCode });
+          }}
+        >代码</Button>
+        <div className="tant-editor-text-tool-split" />
+        <Select
+          options={[]}
+          size="small"
+          bordered={false}
+          dropdownMatchSelectWidth={false}
+          addonBefore={null}
+          value={data.textColor}
+          onChange={(v) => {
+            handleTextColor(slate, v);
+            setData({ textColor: v });
+          }}
+        />
+        <Select
+          options={[]}
+          size="small"
+          bordered={false}
+          dropdownMatchSelectWidth={false}
+          addonBefore={null}
+          value={data.backgroundColor}
+          onChange={(v) => {
+            handleBgColor(slate, v);
+            setData({ backgroundColor: v });
+          }}
+        />
+      </div>
     </div>
   );
 }
-let div = document.getElementById('tant-editor-text-tool-container');
-if (!div) {
-  div = document.createElement('div');
-  div.id = 'tant-editor-text-tool-container';
-  div.onmousedown = (e => {
-    e.preventDefault();
-    e.stopPropagation();
-  });
-  document.body.appendChild(div);
-}
-const render = createRoot(div);
-export const openTextTool = (obj: {
-  top: number,
-  left: number,
-  slate: BaseEditor & ReactEditor,
-  close?: () => void;
-}) => {
-  closeUrlTool(obj.slate);
-  closeCalloutTool(obj.slate);
-  render.render(<Index
-    {...obj}
-  />);
-}
-export const closeTextTool = (slate: BaseEditor & ReactEditor) => {
-  render.render(<Index
-    open={false}
-    slate={slate}
-  />);
-}
+export default Index;

@@ -1,18 +1,24 @@
 import React, { FC, ReactNode } from 'react';
 import './index.less';
-import { TabPaneElement } from '../../typing';
+import { CodeLineElement } from '../../typing';
+import classNames from 'classnames';
 
 type Props = {
   attributes: any;
   children: ReactNode;
-  element: TabPaneElement;
+  element: CodeLineElement;
 };
 
 const Index: FC<Props> = ({
   attributes, children,
 }) => {
   return (
-    <div className="tant-editor-tabpane" {...attributes}>
+    <div
+      className={classNames(
+        'tant-editor-codeline',
+      )}
+      {...attributes}
+    >
       {children}
     </div>
   );

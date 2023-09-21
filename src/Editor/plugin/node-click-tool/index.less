@@ -1,0 +1,40 @@
+.tant-editor-node-edit-tool-container {
+  position: relative;
+  z-index: 9;
+  .tant-editor-node-edit-tool {
+    z-index: 9;
+    position: absolute;
+    height: 24px;
+    width: 24px;
+    background-color: #ccc;
+    transform: translateY(-50%);
+    border-radius: 4px;
+    text-align: center;
+  }
+}
+.tant-editor-table-create-container {
+  .tant-editor-table-create-header {
+    padding: 10px;
+    text-align: right;
+  }
+  .tant-editor-table-create-content {
+    border: 1px solid #ccc;
+    padding-top: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
+    .tant-editor-table-create-row {
+      display: flex;
+      margin-bottom: 10px;
+      column-gap: 10px;
+    }
+    .tant-editor-table-create-item {
+      border: 1px solid #ccc;
+      width: 20px;
+      height: 20px;
+      border-radius: 4px;
+    }
+    .tant-editor-table-create-item-active {
+      background-color: #f00;
+    }
+  }
+}

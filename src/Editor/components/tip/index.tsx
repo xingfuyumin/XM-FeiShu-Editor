@@ -1,6 +1,6 @@
 import React, { FC, ReactNode } from 'react';
 import './index.less';
-import { TipElement } from '../../index.d';
+import { TipElement } from '../../typing';
 import classNames from 'classnames'
 
 type Props = {

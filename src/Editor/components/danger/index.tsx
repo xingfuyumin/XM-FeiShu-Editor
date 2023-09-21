@@ -1,6 +1,6 @@
 import React, { FC, ReactNode } from 'react';
 import './index.less';
-import { DangerElement } from '../../index.d';
+import { DangerElement } from '../../typing';
 import classNames from 'classnames'
 
 type Props = {

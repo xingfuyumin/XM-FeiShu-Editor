@@ -4,9 +4,9 @@ import './index.less';
 import { Button, Input } from '@tant/ui-next';
 import { ReactEditor } from 'slate-react';
 import { BaseEditor, BaseSelection, Text as Text2 } from 'slate';
-import { Text } from '../../index.d';
+import { Text } from '../../typing';
 import { closeCalloutTool } from '../callout-tool';
-import { closeTextTool } from '../text-tool';
+// import { closeTextTool } from '../text-tool';
 
 type Props = {
   open?: boolean;
@@ -150,7 +150,7 @@ export const openUrlTool = (obj: {
   close?: () => void;
   timer?: any;
 }) => {
-  closeTextTool(obj.slate);
+  // closeTextTool(obj.slate);
   closeCalloutTool(obj.slate);
   render.render(<Index
     {...obj}

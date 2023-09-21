@@ -1,6 +1,6 @@
 import React, { FC, ReactNode } from 'react';
 import './index.less';
-import { GridElement } from '../../index.d';
+import { GridElement } from '../../typing';
 
 type Props = {
   attributes: any;

@@ -1,7 +1,7 @@
 import { ReactEditor, useSlate } from 'slate-react';
 import { cloneDeep } from 'lodash';
 import { useEffect } from 'react';
-import { BulletElement, CalloutElement, DangerElement, HeadingElement, OrderedElement, TextElement, TipElement, WarningElement } from '../index.d';
+import { BulletElement, CalloutElement, DangerElement, HeadingElement, OrderedElement, TextElement, TipElement, WarningElement } from '../typing';
 export default (element: BulletElement | OrderedElement | TextElement | HeadingElement | CalloutElement | TipElement | DangerElement | WarningElement) => {
   const slate = useSlate();
   useEffect(() => {

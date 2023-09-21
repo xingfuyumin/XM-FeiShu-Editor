@@ -1,6 +1,6 @@
 import React, { FC, ReactNode, useRef } from 'react';
 import './index.less';
-import { Text } from '../../index.d';
+import { Text } from '../../typing';
 import classNames from 'classnames'
 import { closeUrlTool, openUrlTool } from 'tant-editor/Editor/plugin/url-tool';
 import { useSlate } from 'slate-react';

@@ -1,6 +1,6 @@
 import React, { FC, ReactNode } from 'react';
 import './index.less';
-import { DividerElement } from '../../index.d';
+import { DividerElement } from '../../typing';
 import classNames from 'classnames'
 
 type Props = {

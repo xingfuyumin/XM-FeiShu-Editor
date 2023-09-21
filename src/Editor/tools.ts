@@ -1,6 +1,6 @@
 import { BaseEditor, Editor } from "slate"
 import { ReactEditor } from "slate-react"
-import { FontBackgroundColor, FontColor, Link } from "./index.d";
+import { FontBackgroundColor, FontColor, Link } from "./typing";
 
 
 export const isBold = (editor: BaseEditor & ReactEditor) => {

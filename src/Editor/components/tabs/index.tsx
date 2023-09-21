@@ -1,6 +1,6 @@
 import React, { FC, ReactNode, useEffect, useState } from 'react';
 import './index.less';
-import { TabsElement } from '../../index.d';
+import { TabsElement } from '../../typing';
 import { Tabs } from '@tant/ui-next';
 import { useSlate } from 'slate-react';
 import usePath from 'tant-editor/Editor/hooks/usePath';

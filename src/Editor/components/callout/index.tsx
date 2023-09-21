@@ -1,9 +1,7 @@
 import React, { FC, ReactNode, useRef } from 'react';
 import './index.less';
-import { CalloutElement } from '../../index.d';
-import useText from 'tant-editor/Editor/hooks/useText';
-import useFocus from 'tant-editor/Editor/hooks/useFocus';
-import typeTool from 'tant-editor/Editor/plugin/type-tool';
+import { CalloutElement } from '../../typing';
+import useFocus from 'tant-editor/Editor/hooks/useHover';
 import classNames from 'classnames'
 import emoji from './emoji.json';
 import { ReactEditor, useSlate } from 'slate-react';
@@ -20,7 +18,6 @@ type Props = {
 const Index: FC<Props> = ({
   attributes, children, element,
 }) => {
-  useText(element);
   const isFocus = useFocus(element);
   const slate = useSlate();
   const ref = useRef<any>(null);
@@ -100,4 +97,4 @@ const Index: FC<Props> = ({
   );
 }
 
-export default typeTool(Index);
+export default Index;

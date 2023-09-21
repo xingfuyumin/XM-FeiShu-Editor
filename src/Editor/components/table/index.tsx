@@ -1,6 +1,6 @@
 import React, { FC, ReactNode } from 'react';
 import './index.less';
-import { TableElement } from '../../index.d';
+import { TableElement } from '../../typing';
 
 type Props = {
   attributes: any;
@@ -22,7 +22,9 @@ const Index: FC<Props> = ({
       className="tant-editor-table"
       {...attributes}
     >
-      <table>
+      <table
+      style={{ minWidth: property?.column_width?.reduce((sum, d) => sum + d) }}
+      >
         <colgroup>
           {
             cols.map((col, colIndex) => <col key={colIndex} width={property?.column_width?.[colIndex]} />)

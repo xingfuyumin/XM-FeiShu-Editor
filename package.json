@@ -75,6 +75,7 @@
     "ahooks": "^3.7.8",
     "lodash": "^4.17.21",
     "slate": "^0.94.1",
+    "slate-history": "^0.93.0",
     "slate-react": "^0.98.3"
   }
 }

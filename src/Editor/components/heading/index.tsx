@@ -1,37 +1,37 @@
-import React, { FC, ReactNode } from 'react';
+import React, { FC, ReactNode, useEffect } from 'react';
 import './index.less';
-import { HeadingElement } from '../../index.d';
-import useText from 'tant-editor/Editor/hooks/useText';
-import useFocus from 'tant-editor/Editor/hooks/useFocus';
-import typeTool from 'tant-editor/Editor/plugin/type-tool';
-import classNames from 'classnames'
+import { HeadingElement } from '../../typing';
+import classNames from 'classnames';
 
 type Props = {
   attributes: any;
   children: ReactNode;
   element: HeadingElement;
+  onHover: (v: HeadingElement | null) => void;
 };
 
 const Index: FC<Props> = ({
-  attributes, children, element,
+  attributes, children, element, onHover,
 }) => {
-  useText(element);
-  const isFocus = useFocus(element);
+  useEffect(() => {
+    onHover(element);
+  }, [element]);
   return (
     <div
       className={classNames(
         'tant-editor-heading',
         `tant-editor-heading-${element.level || 1}`
       )}
-      data-focus={isFocus}
       {...attributes}
       style={{
         textAlign: element.align || 'left'
       }}
+      onMouseEnter={() => onHover(element)}
+      onMouseLeave={() => onHover(null)}
     >
       {children}
     </div>
   );
 }
 
-export default typeTool(Index);
+export default Index;

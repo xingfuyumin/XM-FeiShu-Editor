@@ -249,10 +249,7 @@ export interface BulletElement {
   type: 'Bullet';
   children: Text[];
   align?: Align;
-  indentation: {
-    num: number;
-    max?: number;
-  };
+  indentation: number;
 }
 /**
  * 有序列表
@@ -261,10 +258,7 @@ export interface OrderedElement {
   type: 'Ordered';
   children: Text[];
   align?: Align;
-  indentation: {
-    num: number;
-    max?: number;
-  };
+  indentation: number;
   order: {
     num?: number;
     str?: string;
@@ -275,8 +269,7 @@ export interface OrderedElement {
  */
 export interface CalloutElement {
   type: 'Callout';
-  children: Text[];
-  align?: Align;
+  children: TextElement[];
   callout?: {
     /**
      * 背景色
@@ -311,7 +304,6 @@ export interface HeadingElement {
 export interface TabsElement {
   type: 'Tabs';
   children: TabPaneElement[];
-  align?: Align;
 }
 type TabPaneChildren = TextElement | Bullet | Ordered | Heading | Image | Tip | Warning | Danger | Divider | Quote | Table | Code | Callout | Grid;
 /**
@@ -364,7 +356,6 @@ export interface DangerElement {
  */
 export interface QuoteElement {
   type: 'Quote';
-  align?: Align;
   children: TextElement[];
 }
 export interface DividerElement {
@@ -373,10 +364,13 @@ export interface DividerElement {
 }
 export interface CodeElement {
   type: 'Code';
-  children: TextElement[];
-  align?: Align;
+  children: CodeLineElement[];
   language?: CodeLanguage;
   wrap?: boolean;
+}
+export interface CodeLineElement {
+  type: 'CodeLine';
+  children: Text[];
 }
 export interface TableElement {
   type: 'Table';
@@ -422,7 +416,7 @@ declare module 'slate' {
     Element: GridElement | BulletElement | TextElement | OrderedElement |
     HeadingElement | CalloutElement | TabsElement | TabPaneElement | ImageElement |
     TipElement | WarningElement | DangerElement | DividerElement | QuoteElement |
-    TableElement | TableCellElement;
+    TableElement | TableCellElement | CodeLineElement;
     Text: Text
   }
 }

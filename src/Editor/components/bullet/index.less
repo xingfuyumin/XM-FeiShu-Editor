@@ -4,10 +4,10 @@
   border-radius: 4px;
   display: flex;
   &::before {
-    content: '•';
+    content: attr(data-dot);
     margin-right: 10px;
   }
-  &[data-focus=true], &:hover {
-    background-color: rgba(247, 247, 248);
+  &[data-focus=true] {
+    background-color: rgb(231,238,254);
   }
 }
