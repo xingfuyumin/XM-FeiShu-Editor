@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunktant_editor=self.webpackChunktant_editor||[]).push([[448],{65149:function(i,t,e){e.r(t),e.d(t,{default:function(){return d}});var n=e(61748),o=e(67294),r=function(){var u=(0,n.UO)(),m=u.id,s=(0,n.WF)(),c=s.demos,f=c[m]||{},a=f.component;return a&&(0,o.createElement)(a)},d=r}}]);

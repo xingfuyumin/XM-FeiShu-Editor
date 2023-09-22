@@ -1,3 +1,8 @@
+---
+nav: 富文本编辑器
+hero: 
+  title: 富文本编辑器
+---
 # tant-editor
 
 ```jsx
