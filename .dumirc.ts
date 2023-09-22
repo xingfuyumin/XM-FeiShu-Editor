@@ -5,4 +5,8 @@ export default defineConfig({
   themeConfig: {
     name: 'tant-editor',
   },
+  publicPath: process.env.NODE_ENV === 'production' ? '/XM-FeiShu-Editor/docs-dist/' : '',
+  history: {
+    type: 'hash',
+  }
 });
