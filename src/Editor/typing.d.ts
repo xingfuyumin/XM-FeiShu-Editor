@@ -42,10 +42,7 @@ interface Text {
   /**
    * 内部属性
    */
-  inline_code_start?: boolean;
-  inline_code_end?: boolean;
   selection?: boolean;
-  path?: number[];
 }
 export interface Link {
   /**
@@ -322,6 +319,7 @@ export interface ImageElement {
   align?: Align;
   src: string;
   loading?: boolean;
+  showSize?: [number | string, number | string];
   children: Text[];
 }
 /**
@@ -416,7 +414,7 @@ declare module 'slate' {
     Element: GridElement | BulletElement | TextElement | OrderedElement |
     HeadingElement | CalloutElement | TabsElement | TabPaneElement | ImageElement |
     TipElement | WarningElement | DangerElement | DividerElement | QuoteElement |
-    TableElement | TableCellElement | CodeLineElement;
+    TableElement | TableCellElement | CodeLineElement | CodeElement;
     Text: Text
   }
 }

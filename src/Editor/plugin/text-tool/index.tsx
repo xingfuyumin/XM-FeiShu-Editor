@@ -1,14 +1,15 @@
-import React, { FC, useCallback, useEffect, useState } from 'react';
+import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import './index.less';
 import { Button, Select } from '@tant/ui-next'
-import { useSlate, useSlateSelector } from 'slate-react';
+import { useFocused, useSlate, useSlateSelector } from 'slate-react';
 import { Link, FontColor, FontBackgroundColor } from '../../typing'
 import { debounce } from 'lodash';
 import { useSetState } from 'ahooks';
 import { getBgColor, getLink, getTextColor, handleBgColor, handleBold, handleInlineCode, handleItalic, handleStrikethrough, handleTextColor, handleUnderline, isBold, isInlineCode, isItalic, isStrikethrough, isUnderline } from 'tant-editor/Editor/tools';
 
 type Props = {
-  rootDom: any;
+  rootDomRef: any;
+  setClickElement: (d: any) => void;
 };
 type State = {
   style: {
@@ -58,54 +59,69 @@ export const indentOptions = [
 
 
 const Index: FC<Props> = ({
-  rootDom,
+  rootDomRef,
+  setClickElement,
 }) => {
   const slate = useSlate();
   const [open, setOpen] = useState(false);
-  const [data, setData] = useSetState<State>({ style: {} });
-  const selection = useSlateSelector((slate) => {
-    const selection = slate.selection;
-    return selection;
+  const focus = useFocused();
+  const selectionLen = useSlateSelector(() => {
+    return getSelection()?.toString()?.length;
   });
-  const setOpenDebounce = useCallback(debounce(setOpen, 200), []);
-  useEffect(() => {
+  const [data, setData] = useSetState<State>({ style: {} });
+  const getToolPosition = useCallback(debounce(() => {
     const winSelection = getSelection();
-    if (!winSelection?.toString()?.length) {
+    if (!winSelection) {
+      return;
+    }
+    const range = winSelection.getRangeAt(0);
+    const rootRect = rootDomRef.current.getBoundingClientRect();
+    const rect = range.getBoundingClientRect();
+    const obj: State = { style: {} };
+    const left = rect.left - rootRect.left - 34;
+    const right = rootRect.right - rect.right - 34;
+    const top = rect.top - rootRect.top - 64 + rootDomRef.current.scrollTop;
+    obj.style.top = top as number;
+    obj.style.left = left;
+    if (top < 0) {
+      obj.style.top += 40 + rect.height;
+    }
+    if (left > rootRect.width * 1 / 3 ) {
+      obj.style.left = undefined;
+      obj.style.right = right;
+    }
+    obj.bold = isBold(slate);
+    obj.italic = isItalic(slate);
+    obj.link = getLink(slate);
+    obj.underline = isUnderline(slate);
+    obj.strikethrough = isStrikethrough(slate);
+    obj.inlineCode = isInlineCode(slate);
+    obj.textColor = getTextColor(slate);
+    obj.backgroundColor = getBgColor(slate);
+    setData(obj);
+    setOpen(true);
+  }, 200), []);
+  const textColorOptions = useMemo(() => {
+    return Array(8).fill('').map((d, index) => ({
+      key: String(index),
+      value: index,
+      label: <div className={`tant-editor-text-textcolor tant-editor-text-textcolor-${index || 'default'}`}>A</div>
+    }))
+  }, []);
+  const backgroundColorOptions = useMemo(() => {
+    return Array(15).fill('').map((d, index) => ({
+      key: String(index),
+      value: index,
+      label: <div className={`tant-editor-text-bgcolor tant-editor-text-bgcolor-${index || 'default'}`} />
+    }))
+  }, []);
+  useEffect(() => {
+    if (!selectionLen || !focus) {
       setOpen(false);
       return;
     }
-    if (winSelection) {
-      const range = winSelection.getRangeAt(0);
-      const rootRect = rootDom.getBoundingClientRect();
-      const rect = range.getBoundingClientRect();
-      const obj: State = { style: {} };
-      const left = rect.left - rootRect.left - 24;
-      const right = rect.right - rootRect.right - 24;
-      const top = rect.top - rootRect.top - 24;
-      const bottom = rect.bottom - rootRect.bottom - 24;
-      if (top < bottom) {
-        obj.style.bottom = bottom - 40 - rootDom.scrollTop;
-      } else {
-        obj.style.top = top - 40 - rootDom.scrollTop;
-      }
-      if (left < right) {
-        obj.style.right = right;
-      } else {
-        obj.style.left = left;
-      }
-      obj.bold = isBold(slate);
-      obj.italic = isItalic(slate);
-      obj.link = getLink(slate);
-      obj.underline = isUnderline(slate);
-      obj.strikethrough = isStrikethrough(slate);
-      obj.inlineCode = isInlineCode(slate);
-      obj.textColor = getTextColor(slate);
-      obj.backgroundColor = getBgColor(slate);
-      setData(obj);
-      console.log(obj);
-      setOpenDebounce(true);
-    }
-  }, [selection]);
+    getToolPosition();
+  }, [selectionLen, focus]);
   if (!open) {
     return null;
   }
@@ -124,25 +140,6 @@ const Index: FC<Props> = ({
         className="tant-editor-text-tool"
         style={data.style}
       >
-        <Select
-          options={alignOptions}
-          size="small"
-          bordered={false}
-          dropdownMatchSelectWidth={false}
-          addonBefore={null}
-          defaultValue="left"
-        />
-        <Select
-          options={indentOptions}
-          size="small"
-          bordered={false}
-          dropdownMatchSelectWidth={false}
-          addonBefore={null}
-          value="缩进"
-          placeholder="缩进"
-          showArrow={false}
-        />
-        <div className="tant-editor-text-tool-split" />
         <Button
           size="small"
           type={data.bold ? 'secondary' : 'text'}
@@ -179,7 +176,8 @@ const Index: FC<Props> = ({
           size="small"
           type={data.link?.url ? 'secondary' : 'text'}
           onClick={() => {
-
+            setOpen(false);
+            setClickElement(window.getSelection()?.getRangeAt(0));
           }}
         >链接</Button>
         <Button
@@ -192,7 +190,7 @@ const Index: FC<Props> = ({
         >代码</Button>
         <div className="tant-editor-text-tool-split" />
         <Select
-          options={[]}
+          options={textColorOptions}
           size="small"
           bordered={false}
           dropdownMatchSelectWidth={false}
@@ -204,7 +202,7 @@ const Index: FC<Props> = ({
           }}
         />
         <Select
-          options={[]}
+          options={backgroundColorOptions}
           size="small"
           bordered={false}
           dropdownMatchSelectWidth={false}

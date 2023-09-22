@@ -2,7 +2,6 @@ import React, { FC, ReactNode } from 'react';
 import './index.less';
 import { HeadingElement } from '../../typing';
 import classNames from 'classnames'
-import useHover from 'tant-editor/Editor/hooks/useHover';
 
 type Props = {
   attributes: any;
@@ -13,7 +12,6 @@ type Props = {
 const Index: FC<Props> = ({
   attributes, children, element,
 }) => {
-  const props = useHover(element);
   return (
     <div
       className={classNames(
@@ -24,7 +22,6 @@ const Index: FC<Props> = ({
       style={{
         textAlign: element.align || 'left'
       }}
-      {...props}
     >
       {children}
     </div>

@@ -1,22 +1,27 @@
-import React, { FC, ReactNode, useRef } from 'react';
+import React, { FC, ReactNode, useMemo } from 'react';
 import './index.less';
 import { Text } from '../../typing';
 import classNames from 'classnames'
-import { closeUrlTool, openUrlTool } from 'tant-editor/Editor/plugin/url-tool';
+import { toDOMNode } from 'tant-editor/Editor/comm/slate-api';
 import { useSlate } from 'slate-react';
-import { cloneDeep } from 'lodash';
 
 type Props = {
   attributes: any;
   children: ReactNode;
   leaf: Text;
+  text: Text;
+  onClick: (v: any) => void;
 };
 
 const Index: FC<Props> = ({
-  attributes, leaf, children,
+  attributes, leaf, children, text, onClick,
 }) => {
   const slate = useSlate();
-  const ref = useRef<any>(null);
+  const [inlineCodeStart, inlineCodeEnd] = useMemo(() => {
+    const nodes = (children as any).props.parent.children;
+    const index = nodes.findIndex((d: any) => d === text);
+    return [text.inline_code && !nodes[index - 1]?.inline_code, text.inline_code && !nodes[index + 1]?.inline_code];
+  }, [children, text]);
   return (
     <span
       className={classNames(
@@ -28,93 +33,15 @@ const Index: FC<Props> = ({
         leaf.italic ? 'tant-editor-text-italic' : '',
         leaf.strikethrough ? 'tant-editor-text-strikethrough' : '',
         leaf.inline_code ? 'tant-editor-text-inlinecode' : '',
-        leaf.inline_code_start ? 'tant-editor-text-inlinecode-start' : '',
-        leaf.inline_code_end ? 'tant-editor-text-inlinecode-end' : '',
-        leaf.selection ? 'tant-editor-text-bgcolor-15' : '',
+        inlineCodeStart ? 'tant-editor-text-inlinecode-start' : '',
+        inlineCodeEnd ? 'tant-editor-text-inlinecode-end' : '',
+        leaf.selection ? 'tant-editor-text-bgcolor-12' : '',
         leaf.link?.url ? 'tant-editor-text-link' : '',
       )}
       onClick={() => {
         if (leaf.link?.url) {
-          window.open(leaf.link?.url, '_blank')
+          onClick(toDOMNode(slate, text));
         }
-      }}
-      onMouseEnter={(e) => {
-        e.stopPropagation();
-        if (ref.current) {
-          clearTimeout(ref.current);
-          ref.current = null;
-        }
-        ref.current = setTimeout(() => {
-          if (!leaf.link?.url) {
-            return;
-          }
-          const dom = e.target as any;
-          if (!dom) {
-            return;
-          }
-          const rect = dom.getBoundingClientRect();
-          const top = (rect?.top || 0) - 40;
-          const left = ((rect?.left + rect?.right) / 2) || 0;
-          openUrlTool({
-            slate,
-            top,
-            left,
-            selection: {
-              anchor: {
-                offset: 0,
-                path: leaf.path || [],
-              },
-              focus: {
-                offset: leaf.text.length - 1,
-                path: leaf.path || [],
-              }
-            },
-            link: cloneDeep(leaf.link || {} as Text['link']),
-            close: () => {
-              closeUrlTool(slate);
-            },
-          })
-        }, 500)
-      }}
-      onMouseLeave={(e) => {
-        e.stopPropagation();
-        if (ref.current) {
-          clearTimeout(ref.current);
-          ref.current = null;
-        }
-        if (!leaf.link?.url) {
-          return;
-        }
-        ref.current = setTimeout(() => {
-          closeUrlTool(slate);
-        }, 500);
-        const dom = e.target as any;
-        if (!dom) {
-          return;
-        }
-        const rect = dom.getBoundingClientRect();
-        const top = (rect?.top || 0) - 40;
-        const left = ((rect?.left + rect?.right) / 2) || 0;
-        openUrlTool({
-          slate,
-          top,
-          left,
-          selection: {
-            anchor: {
-              offset: 0,
-              path: leaf.path || [],
-            },
-            focus: {
-              offset: leaf.text.length - 1,
-              path: leaf.path || [],
-            }
-          },
-          link: cloneDeep(leaf.link || {} as Text['link']),
-          timer: ref.current,
-          close: () => {
-            closeUrlTool(slate);
-          },
-        })
       }}
       {...attributes}
     >

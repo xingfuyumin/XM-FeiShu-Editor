@@ -74,8 +74,11 @@
     "@tant/ui-next": "^2.54.23",
     "ahooks": "^3.7.8",
     "lodash": "^4.17.21",
+    "re-resizable": "^6.9.11",
     "slate": "^0.94.1",
     "slate-history": "^0.93.0",
-    "slate-react": "^0.98.3"
+    "slate-react": "^0.98.3",
+    "viewerjs": "^1.11.6",
+    "viewerjs-react": "^1.0.2"
   }
 }

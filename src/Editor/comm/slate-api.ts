@@ -88,3 +88,11 @@ export const ancestors = (root: Node, path: Path, options?: NodeAncestorsOptions
     return [];
   }
 }
+export const select = (slate: BaseEditor & ReactEditor, target: Location) => {
+  try {
+    return slate.select(target);
+  } catch (err) {
+    console.error('select', target, err);
+    return [];
+  }
+}

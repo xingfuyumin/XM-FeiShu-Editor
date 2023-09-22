@@ -9,6 +9,8 @@ import { TaAdd2, TaDashboardMgr } from '@tant/icons';
 import { findParent, findPath, insertNode, setNodes, toDOMNode, unsetNodes } from 'tant-editor/Editor/comm/slate-api';
 import uploadFileImg from 'tant-editor/Editor/comm/upload-file-img';
 import TableCreate from './table-create';
+import { cloneDeep } from 'lodash'
+import { getImageSize } from 'tant-editor/Editor/comm/upload-clipboard-img';
 
 type ToolElement = TextElement | BulletElement | OrderedElement | HeadingElement;
 type Props = {
@@ -152,10 +154,51 @@ const elementMenuMap = {
     key: 'Danger',
     label: '危险说明'
   },
+  Indent: {
+    key: 'Indent',
+    label: '缩进',
+    popupOffset: [-4, 0],
+    children: [
+      {
+        key: 'indentAdd',
+        label: '增加缩进',
+        disabled: false,
+      },
+      {
+        key: 'indentSub',
+        label: '减少缩进',
+        disabled: false,
+      },
+    ],
+  },
+  Align: {
+    key: 'Align',
+    label: '对齐方式',
+    popupOffset: [-4, 0],
+    children: [
+      {
+        key: 'Alignleft',
+        label: '左对齐'
+      },
+      {
+        key: 'Aligncenter',
+        label: '中间对齐'
+      },
+      {
+        key: 'Alignright',
+        label: '右对齐'
+      },
+    ],
+  },
 }
 const getElementMenus = (element: Element | null, isEmpty: boolean, slate: BaseEditor & ReactEditor) => {
   if (!element) {
     return [];
+  }
+  if (element.type === 'Image') {
+    return [
+      elementMenuMap.Align,
+    ];
   }
   const list: any[] = [
     elementMenuMap.Text,
@@ -200,6 +243,20 @@ const getElementMenus = (element: Element | null, isEmpty: boolean, slate: BaseE
         elementMenuMap.Grid,
       ]);
     }
+  }
+  list.push(...[
+    elementMenuMap.divider,
+    elementMenuMap.Align,
+  ]);
+  if (['Bullet', 'Ordered'].includes(element.type)) {
+    const Indent = cloneDeep(elementMenuMap.Indent);
+    if ((element as any).indentation >= 10) {
+      Indent.children[0].disabled = true;
+    }
+    if ((element as any).indentation <= 0) {
+      Indent.children[1].disabled = true;
+    }
+    list.push(Indent);
   }
   return list;
 }
@@ -246,7 +303,7 @@ const getMenuKey = (element: Element | null) => {
   if (element.type === 'Grid') {
     return [`${element.type}${element.grid.column_size}`]
   }
-  return [element.type];
+  return [element.type, `Align${(element as any).align}`];
 }
 const handleNodeChange = async (
   element: Element | null, key: string,
@@ -262,7 +319,42 @@ const handleNodeChange = async (
     type: '',
     children: [],
   };
-  if (key.startsWith('Heading')) {
+  if (key === 'indentAdd') {
+    setNodes(slate, {
+      indentation: ((element as any).indentation || 0) + 1,
+    }, {
+      at: path
+    });
+    return;
+  } else if (key === 'indentSub') {
+    setNodes(slate, {
+      indentation: ((element as any).indentation || 0) - 1,
+    }, {
+      at: path
+    });
+    return;
+  } else if (key === 'Alignleft') {
+    setNodes(slate, {
+      align: 'left',
+    }, {
+      at: path
+    });
+    return;
+  } else if (key === 'Aligncenter') {
+    setNodes(slate, {
+      align: 'center',
+    }, {
+      at: path
+    });
+    return;
+  } else if (key === 'Alignright') {
+    setNodes(slate, {
+      align: 'right',
+    }, {
+      at: path
+    });
+    return;
+  } else if (key.startsWith('Heading')) {
     const level = Number(key.split('Heading')[1]) || 1;
     newElement.type = 'Heading';
     newElement.level = level;
@@ -273,7 +365,7 @@ const handleNodeChange = async (
     newElement.grid = { column_size: num };
     for (let i = 0; i < num; i += 1) {
       newElement.children.push({
-        tyoe: 'GridColumn',
+        type: 'GridColumn',
         children: [{ type: 'Text', children: [{ text: '' }] }],
       });
     }
@@ -316,6 +408,7 @@ const handleNodeChange = async (
     newElement.loading = true;
     newElement.src = base64;
     newElement.children.push({ text: '' });
+    newElement.showSize = await getImageSize(base64) as [any, any];
     insertNode(slate, newElement, { at: path });
     const url = (await onUpload(base64)) || base64;
     const newPath = findPath(slate, newElement);

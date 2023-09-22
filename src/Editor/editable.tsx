@@ -27,6 +27,8 @@ import { EditableProps } from 'slate-react/dist/components/editable';
 import uploadClipboardImg from './comm/upload-clipboard-img';
 import NodeClickTool from './plugin/node-click-tool';
 import TextTool from './plugin/text-tool';
+import UrlTool from './plugin/url-tool';
+import BlockTool from './plugin/block-tool';
 
 interface Props extends EditableProps {
   onUpload: (base64: string) => Promise<string>;
@@ -38,6 +40,8 @@ const Index: FC<Props> = ({
   onUpload,
 }) => {
   const [hoverElement, setHoverElement] = useState(null);
+  const [clickElement, setClickElement] = useState(null);
+  const [clickBlockElement, setClickBlockElement] = useState(null);
   const ref = useRef(null);
   const slate = useSlate();
   const renderElement = useCallback((props: any) => {
@@ -57,13 +61,13 @@ const Index: FC<Props> = ({
       case 'Heading':
         return <Heading {...props} onHover={setHoverElement} />
       case 'Callout':
-        return <Callout {...props} />
+        return <Callout {...props} onClick={setClickBlockElement}/>
       case 'Tabs':
         return <Tabs {...props} />
       case 'TabPane':
         return <TabPane {...props} />
       case 'Image':
-        return <Image {...props} />
+        return <Image {...props} onHover={setHoverElement} />
       case 'Tip':
         return <Tip {...props} />
       case 'Warning':
@@ -87,33 +91,60 @@ const Index: FC<Props> = ({
     }
   }, []);
   const renderLeaf = useCallback((props: any) => {
-    return <Leaf {...props} />
+    return <Leaf {...props} onClick={setClickElement} />
   }, []);
   const onPaste = useCallback((e: any) => {
     uploadClipboardImg(e, onUpload, slate);
   }, []);
   const render = useMemo(() => (
     <Editable
+    scrollSelectionIntoView={() => {
+
+    }}
       className="tant-editor-text"
       renderElement={renderElement}
       renderLeaf={renderLeaf}
       onPaste={onPaste}
     />
-  ), [])
+  ), []);
+  const TextToolRender = useMemo(() => (
+    <TextTool
+      rootDomRef={ref} // 不这么写会有闭包问题
+      setClickElement={setClickElement}
+    />
+  ), []);
+  const UrlToolRender = useMemo(() => (
+    <UrlTool
+      rootDomRef={ref} // 不这么写会有闭包问题
+      clickElement={clickElement}
+      setClickElement={setClickElement}
+    />
+  ), [clickElement]);
+
+  const BlockToolRender = useMemo(() => (
+    <BlockTool
+      rootDomRef={ref} // 不这么写会有闭包问题
+      clickBlockElement={clickBlockElement}
+      setClickBlockElement={setClickBlockElement}
+    />
+  ), [clickBlockElement]);
+  const hoverElementRender = useMemo(() => (
+    <NodeClickTool
+      hoverElement={hoverElement}
+      rootDom={ref.current}
+      onUpload={onUpload}
+    />
+  ), [hoverElement, ref.current]);
   return (
     <div
       className="tant-editor"
       onMouseLeave={() => setHoverElement(null)}
       ref={ref}
     >
-      <NodeClickTool
-        hoverElement={hoverElement}
-        rootDom={ref.current}
-        onUpload={onUpload}
-      />
-      <TextTool
-        rootDom={ref.current}
-      />
+      {BlockToolRender}
+      {UrlToolRender}
+      {hoverElementRender}
+      {TextToolRender}
       {render}
     </div>
   );

@@ -1,7 +1,7 @@
-.tant-editor-url-tool-container {
+.tant-editor-block-tool-container {
   position: relative;
   z-index: 9;
-  .tant-editor-url-tool {
+  .tant-editor-block-tool {
     display: inline-flex;
     align-items: center;
     column-gap: 4px;
@@ -11,6 +11,7 @@
     position: absolute;
     z-index: 9;
     background-color: var(--tant-bg-white-color-bg1-1);
+    transform: translateX(-50%);
     .tant-select .tant-select-selector-empty {
       color: var(--tant-text-gray-color-text1-2);
     }
@@ -19,5 +20,14 @@
       background-color: #ccc;
       height: 24px;
     }
+  }
+}
+.tant-editor-callout-border {
+  width: 60px;
+  .tant-select-selector-label {
+    margin-top: 5px;
+  }
+  .tant-editor-callout-bdcolor {
+    border-width: 4px;
   }
 }

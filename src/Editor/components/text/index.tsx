@@ -4,7 +4,7 @@ import { TextElement } from '../../typing';
 
 type Props = {
   attributes: any;
-  children: ReactNode;
+  children: ReactNode[];
   element: TextElement;
   onHover: (v: TextElement | null) => void;
 };

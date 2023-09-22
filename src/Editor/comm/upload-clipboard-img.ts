@@ -1,6 +1,7 @@
 import { cloneDeep } from "lodash";
 import { BaseEditor, Element } from "slate";
 import { ReactEditor } from "slate-react";
+import { insertNode, setNodes } from "./slate-api";
 
 const getUploadImg = async (e: any) => {
   const clipboardData = e.clipboardData;
@@ -28,6 +29,19 @@ const getUploadImg = async (e: any) => {
   return base64;
 };
 
+export const getImageSize = (base64: string) => {
+  return new Promise((resolve, reject) => {
+      let img = new Image();
+      img.onload = function() {
+          resolve([(this as any).width, undefined]);
+      };
+      img.onerror = function() {
+          reject(new Error('Could not load image'));
+      };
+      img.src = base64;
+  });
+}
+
 
 export default async (e: any, onUpload: (base64: string) => Promise<string> = async () => '', slate: BaseEditor & ReactEditor) => {
   const base64 = await getUploadImg(e);
@@ -41,17 +55,19 @@ export default async (e: any, onUpload: (base64: string) => Promise<string> = as
     if (!node) {
       break;
     }
+
     if (Element.isElement(node)) {
-      slate.insertNode({
+      insertNode(slate, {
         type: 'Image',
         src: '',
         loading: true,
+        showSize: await getImageSize(base64) as [any, any],
         children: [{ text: '' }]
       }, {
         at: path,
       })
       const url = (await onUpload(base64)) || base64;
-      slate.setNodes({
+      setNodes(slate, {
         src: url,
         loading: false,
       }, {

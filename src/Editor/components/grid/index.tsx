@@ -1,7 +1,6 @@
 import React, { FC, ReactNode } from 'react';
 import './index.less';
 import { GridElement } from '../../typing';
-import useFocus from '../../hooks/useHover';
 
 type Props = {
   attributes: any;
@@ -10,12 +9,10 @@ type Props = {
 };
 
 const Index: FC<Props> = ({
-  attributes, children, element,
+  attributes, children,
 }) => {
-  const isFocus = useFocus(element);
   return (
     <div className="tant-editor-grid"
-      data-focus={isFocus}
       {...attributes}
     >
       {children}

@@ -1,164 +1,148 @@
 import React, { FC, useEffect, useRef, useState } from 'react';
-import { createRoot } from 'react-dom/client';
 import './index.less';
-import { Button, Input } from '@tant/ui-next';
-import { ReactEditor } from 'slate-react';
-import { BaseEditor, BaseSelection, Text as Text2 } from 'slate';
-import { Text } from '../../typing';
-import { closeCalloutTool } from '../callout-tool';
-// import { closeTextTool } from '../text-tool';
+import { Button, Input } from '@tant/ui-next'
+import { useSlate } from 'slate-react';
+import { cloneDeep } from 'lodash'
+import { useSetState } from 'ahooks';
+import { getLink, handleSelection } from 'tant-editor/Editor/tools';
+import { BaseSelection, Text } from 'slate';
 
 type Props = {
-  open?: boolean;
-  top?: number,
-  left?: number,
-  slate: BaseEditor & ReactEditor,
-  close?: () => void;
+  rootDomRef: any;
+  clickElement: any;
+  setClickElement: (v: any) => void;
+};
+type State = {
+  style: {
+    left?: number,
+    bottom?: number,
+    top?: number,
+    right?: number,
+  }
+  url?: string,
   selection?: BaseSelection,
-  link?: Text['link'],
-  timer?: any;
 };
 
+
 const Index: FC<Props> = ({
-  open = true,
-  top = 0,
-  left = 0,
-  selection,
-  slate,
-  link,
-  close,
-  timer,
+  rootDomRef, clickElement, setClickElement,
 }) => {
-  const [url, setUrl] = useState('');
-  const ref = useRef<any>(null);
-  const domRef = useRef<any>(null);
-  useEffect(() => {
-    if (open) {
-      setUrl(link?.url || '');
-      if (ref.current) {
-        clearTimeout(ref.current);
-        ref.current = null;
-      }
+  const slate = useSlate();
+  const ref = useRef(null);
+  const [open, setOpen] = useState(false);
+  const [data, setData] = useSetState<State>({ style: {} });
+  const getToolPosition = () => {
+    const rootRect = rootDomRef.current.getBoundingClientRect();
+    const rect = clickElement.getBoundingClientRect();
+    const obj: State = { style: {} };
+    const left = rect.left - rootRect.left - 34;
+    const right = rootRect.right - rect.right - 34;
+    const top = rect.top - rootRect.top - 64 + rootDomRef.current.scrollTop;
+    obj.style.top = top;
+    obj.style.left = left;
+    if (top < 0) {
+      obj.style.top += 40 + rect.height;
     }
-  }, [open])
+    if (left > rootRect.width / 2) {
+      obj.style.left = undefined;
+      obj.style.right = right;
+    }
+    obj.url = getLink(slate)?.url;
+    obj.selection = cloneDeep(slate.selection);
+    handleSelection(slate);
+    slate.deselect();
+    setData(obj);
+    setOpen(true);
+  };
+  useEffect(() => {
+    if (!clickElement) {
+      setOpen(false);
+      return;
+    }
+    getToolPosition();
+  }, [clickElement]);
+  useEffect(() => {
+    const func = (e: any) => {
+      if (!(ref.current as any)?.contains(e.target)) {
+        setClickElement(null);
+      }
+    };
+    if (open) {
+      window.addEventListener('click', func);
+    }
+    return () => {
+      window.removeEventListener('click', func);
+    }
+  }, [open, clickElement]);
   if (!open) {
     return null;
   }
   return (
     <div
-      className="tant-editor-url-tool"
-      style={{ left, top }}
-      ref={domRef}
-      tabIndex={1}
-      onBlur={(e) => {
-        if (!domRef.current?.contains(e.relatedTarget)) {
-          if (ref.current) {
-            clearTimeout(ref.current);
-            ref.current = null;
-          }
-          if (close) {
-            close();
-          }
-        }
-      }}
-      onMouseLeave={() => {
-        if (ref.current) {
-          clearTimeout(ref.current);
-          ref.current = null;
-        }
-        ref.current = setTimeout(() => {
-          if (close) {
-            close();
-          }
-        }, 1500);
-      }}
-      onMouseEnter={() => {
-        if (ref.current) {
-          clearTimeout(ref.current);
-          ref.current = null;
-        }
-        if (timer) {
-          clearTimeout(timer);
-        }
-      }}
+      className="tant-editor-url-tool-container"
+      ref={ref}
     >
-      <Input
-        className="tant-editor-url-tool-url"
-        value={url}
-        onChange={e => setUrl(e.target.value)}
-      />
-      <Button
-        danger
-        size="small"
-        onClick={() => {
-          if (selection) {
-            slate.setNodes({
-              link: undefined,
-            }, {
-              at: selection,
-              match: (node) => Text2.isText(node)
-            });
-          }
-          if (close) {
-            close();
-          }
-        }}
-      >删除链接</Button>
-      <Button
-        type="white"
-        size="small"
-        onClick={() => {
-          if (close) {
-            close();
-          }
-        }}
-      >取消</Button>
-      <Button
-        size="small"
-        onClick={() => {
-          const newLink = link || { url: '' };
-          newLink.url = url.trim();
-          if (selection) {
-            slate.setNodes({
-              link: newLink,
-            }, {
-              at: selection,
-              match: (node) => Text2.isText(node)
-            });
-          }
-          if (close) {
-            close();
-          }
-        }}
-      >保存</Button>
+      <div
+        className="tant-editor-url-tool"
+        style={data.style}
+      >
+        <Input
+          className="tant-editor-url-tool-url"
+          value={data.url}
+          onChange={e => {
+            setData({ url: e.target.value });
+          }}
+        />
+        <Button
+          danger
+          size="small"
+          onClick={() => {
+            if (data.selection) {
+              setClickElement(null);
+              slate.setNodes({
+                link: undefined,
+              }, {
+                at: data.selection,
+                match: (node) => Text.isText(node)
+              });
+            }
+          }}
+        >删除</Button>
+        <Button
+          size="small"
+          disabled={!data.url?.trim()}
+          onClick={() => {
+            if (data?.url) {
+              window.open(data?.url?.trim(), '_blank')
+            }
+          }}
+        >跳转</Button>
+        <Button
+          type="white"
+          size="small"
+          onClick={() => {
+            setClickElement(null);
+          }}
+        >取消</Button>
+        <Button
+          size="small"
+          onClick={() => {
+            if (data.selection) {
+              const newLink = cloneDeep(getLink(slate) || { url: '' });
+              newLink.url = data.url?.trim() || '';
+              setClickElement(null);
+              slate.setNodes({
+                link: newLink,
+                selection: false,
+              }, {
+                at: data.selection,
+                match: (node) => Text.isText(node)
+              });
+            }
+          }}
+        >保存</Button>
+      </div>
     </div>
   );
 }
-let div = document.getElementById('tant-editor-url-tool-container');
-if (!div) {
-  div = document.createElement('div');
-  div.id = 'tant-editor-text-url-container';
-  document.body.appendChild(div);
-}
-const render = createRoot(div);
-export const openUrlTool = (obj: {
-  top: number,
-  left: number,
-  slate: BaseEditor & ReactEditor,
-  selection: BaseSelection,
-  link: Text['link'],
-  close?: () => void;
-  timer?: any;
-}) => {
-  // closeTextTool(obj.slate);
-  closeCalloutTool(obj.slate);
-  render.render(<Index
-    {...obj}
-  />);
-}
-export const closeUrlTool = (slate: BaseEditor & ReactEditor) => {
-  render.render(<Index
-    open={false}
-    slate={slate}
-  />);
-}
+export default Index;

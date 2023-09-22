@@ -124,6 +124,10 @@ const Index: FC<Props> = ({
         dropdownMatchSelectWidth={false}
         addonBefore={null}
         value={state.emoji_id}
+        onClick={(e) => {
+          e.stopPropagation();
+          e.preventDefault();
+        }}
         onChange={(v) => {
           ;
           const newCallout = callout || {};
@@ -172,7 +176,6 @@ const Index: FC<Props> = ({
           setState({ background_color: v });
         }}
       />
-
       <Select
         options={borderColorOptions}
         size="small"
