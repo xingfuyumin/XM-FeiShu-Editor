@@ -399,6 +399,13 @@ export interface TableElement {
        */
       col_span?: number;
     }[];
+  },
+  select?: {
+    startRow: number,
+    startCol: number,
+    endRow: number,
+    endCol: number,
+    selecting: boolean,
   }
 }
 type TableCellChildren = TextElement | Bullet | Ordered | Heading | Image;

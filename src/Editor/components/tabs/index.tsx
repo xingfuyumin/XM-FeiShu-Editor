@@ -17,10 +17,7 @@ const Index: FC<Props> = ({
   const [index, setIndex] = useState(0);
   const slate = useSlate();
   const focusPathStr = (slate.selection?.focus?.path || []).join(',');
-  const path = usePath(element);
-  if (!path) {
-    return null;
-  }
+  const path = usePath(element) || [];
   const pathStr = path.join(',');
   useEffect(() => {
     if (index >= element.children?.length) {
@@ -113,7 +110,7 @@ const Index: FC<Props> = ({
         }}
         items={element.children.map((d, index) => ({
           key: String(index),
-          label: <div contentEditable={false}>{d.title}</div>,
+          label: <div>{d.title}</div>,
           children: (children as any)?.[index],
           forceRender: true,
         }))}

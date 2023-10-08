@@ -71,7 +71,7 @@ const Index: FC<Props> = ({
   const [data, setData] = useSetState<State>({ style: {} });
   const getToolPosition = useCallback(debounce(() => {
     const winSelection = getSelection();
-    if (!winSelection) {
+    if (!winSelection || winSelection.rangeCount <= 0) {
       return;
     }
     const range = winSelection.getRangeAt(0);
